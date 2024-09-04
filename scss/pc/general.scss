@@ -22,7 +22,7 @@
 			display: flex;
 			align-items: center;
 			border-radius: 6px;
-			background: #eb6753;
+			background: #33c1c1;
 			img {
 				width: 14px;
 				height: 14px;
@@ -165,6 +165,7 @@
 	flex-direction: column;
 	.agent-img {
 		border-radius: 12px;
+		border: solid #33c1c1;
 		width: 233px;
 		height: 273px;
 		background-size: 100% 100%;
@@ -176,7 +177,7 @@
 			top: 12px;
 			left: 12px;
 			border-radius: 6px;
-			background: #eb6753;
+			background: #33c1c1;
 			color: #fff;
 			font-family: $font;
 			font-size: 12px;
