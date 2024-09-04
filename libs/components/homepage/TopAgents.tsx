@@ -8,6 +8,9 @@ import { Autoplay, Navigation, Pagination } from 'swiper';
 import TopAgentCard from './TopAgentCard';
 import { Member } from '../../types/member/member';
 import { AgentsInquiry } from '../../types/member/member.input';
+import { useQuery } from '@apollo/client';
+import { GET_AGENTS } from '../../../apollo/user/query';
+import { T } from '../../types/common';
 
 interface TopAgentsProps {
 	initialInput: AgentsInquiry;
@@ -18,8 +21,23 @@ const TopAgents = (props: TopAgentsProps) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
 	const [topAgents, setTopAgents] = useState<Member[]>([]);
+	console.log("=========", topAgents);
 
 	/** APOLLO REQUESTS **/
+	const {
+		loading: getAgentsLoading, // bu processda aniq animationlardi korsatar ekan
+		data: getAgentsData, // data kirib kelgunga qadar error bulsa pasdagi erroni beradi
+		error: getAgentsError,
+		refetch: getAgentsRefetch,
+	} = useQuery(GET_AGENTS, {
+		fetchPolicy: "cache-and-network", // birinchi cache oqib keyin networkga o'tiladi
+		variables: {input: initialInput},
+		notifyOnNetworkStatusChange:true,
+		onCompleted: (data: T) => { 
+			console.log("=======", data);
+			setTopAgents(data?.getAgents?.list);
+		},
+	});
 	/** HANDLERS **/
 
 	if (device === 'mobile') {
@@ -54,6 +72,7 @@ const TopAgents = (props: TopAgentsProps) => {
 			<Stack className={'top-agents'}>
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
+
 						<Box component={'div'} className={'left'}>
 							<span>Top Agents</span>
 							<p>Our Top Agents always ready to serve you</p>
@@ -102,7 +121,7 @@ const TopAgents = (props: TopAgentsProps) => {
 TopAgents.defaultProps = {
 	initialInput: {
 		page: 1,
-		limit: 10,
+		limit: 7,
 		sort: 'memberRank',
 		direction: 'DESC',
 		search: {},

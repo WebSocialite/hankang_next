@@ -8,6 +8,12 @@ import { Autoplay, Navigation, Pagination } from 'swiper';
 import { Property } from '../../types/property/property';
 import { PropertiesInquiry } from '../../types/property/property.input';
 import TrendPropertyCard from './TrendPropertyCard';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_PROPERTIES } from '../../../apollo/user/query';
+import { T } from '../../types/common';
+import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAlert';
+import { Message } from '../../enums/common.enum';
 
 interface TrendPropertiesProps {
 	initialInput: PropertiesInquiry;
@@ -19,7 +25,45 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 	const [trendProperties, setTrendProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
+	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
+
+	const {
+		loading: getPropertiesLoading, // bu processda aniq animationlardi korsatar ekan
+		data: getPropertiesData, // data kirib kelgunga qadar error bulsa pasdagi erroni beradi
+		error: getPropertiesError,
+		refetch: getPropertiesRefetch,
+	} = useQuery(GET_PROPERTIES, {
+		fetchPolicy: "cache-and-network", // birinchi cache oqib keyin networkga o'tiladi
+		variables: {input: initialInput},
+		notifyOnNetworkStatusChange:true,
+		onCompleted: (data: T) => { 
+			setTrendProperties(data?.getProperties?.list);
+		},
+	});
+
 	/** HANDLERS **/
+
+	const likePropertyHandler = async (e: any, user: T, id: string ) => {
+		console.log("=======>", e, user);
+		e.stopPropagation();
+		try {
+			
+			if(!id) return;
+			if(!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+			// execute likeTargetHandler
+			await likeTargetProperty({
+				variables: {input: id}
+			});
+
+			// execute getPropertyRefetch
+			await getPropertiesRefetch({ input: initialInput });
+
+			await sweetTopSmallSuccessAlert("success", 800);
+		} catch (err: any) {
+			console.log('ERROR likePropertyHandler', err.message );
+			sweetMixinErrorAlert(err.message).then();
+		}
+	};
 
 	if (trendProperties) console.log('trendProperties:', trendProperties);
 	if (!trendProperties) return null;
@@ -47,7 +91,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 								{trendProperties.map((property: Property) => {
 									return (
 										<SwiperSlide key={property._id} className={'trend-property-slide'}>
-											<TrendPropertyCard property={property} />
+											<TrendPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
 										</SwiperSlide>
 									);
 								})}
@@ -96,7 +140,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 								{trendProperties.map((property: Property) => {
 									return (
 										<SwiperSlide key={property._id} className={'trend-property-slide'}>
-											<TrendPropertyCard property={property} />
+											<TrendPropertyCard property={property} likePropertyHandler={likePropertyHandler} />
 										</SwiperSlide>
 									);
 								})}
@@ -112,7 +156,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 TrendProperties.defaultProps = {
 	initialInput: {
 		page: 1,
-		limit: 8,
+		limit: 7,
 		sort: 'propertyLikes',
 		direction: 'DESC',
 		search: {},

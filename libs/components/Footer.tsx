@@ -13,17 +13,18 @@ const Footer = () => {
 		return (
 			<Stack className={'footer-container'}>
 				<Stack className={'main'}>
+					<h1>hankang</h1>
 					<Stack className={'left'}>
 						<Box component={'div'} className={'footer-box'}>
-							<img src="/img/logo/logoWhite.svg" alt="" className={'logo'} />
+							{/* <img src="/img/logo/logoWhite.svg" alt="" className={'logo'} /> */}
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
 							<span>total free customer care</span>
-							<p>+82 10 4867 2909</p>
+							<p>+82 10 4029 9441</p>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
 							<span>nee live</span>
-							<p>+82 10 4867 2909</p>
+							<p>+82 10 4029 9441</p>
 							<span>Support?</span>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
@@ -63,7 +64,7 @@ const Footer = () => {
 					</Stack>
 				</Stack>
 				<Stack className={'second'}>
-					<span>© Nestar - All rights reserved. Nestar {moment().year()}</span>
+					<span>© hankang - All rights reserved. hankang {moment().year()}</span>
 				</Stack>
 			</Stack>
 		);
@@ -71,17 +72,19 @@ const Footer = () => {
 		return (
 			<Stack className={'footer-container'}>
 				<Stack className={'main'}>
+					
 					<Stack className={'left'}>
 						<Box component={'div'} className={'footer-box'}>
-							<img src="/img/logo/logoWhite.svg" alt="" className={'logo'} />
+							{/* <img src="/img/logo/logoWhite.svg" alt="" className={'logo'} /> */}
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
+						<h1>hankang</h1>
 							<span>total free customer care</span>
-							<p>+82 10 4867 2909</p>
+							<p>+82 10 4029 9441</p>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<span>nee live</span>
-							<p>+82 10 4867 2909</p>
+							<span>feel free to call</span>
+							<p>+82 10 4029 9441</p>
 							<span>Support?</span>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
@@ -128,7 +131,7 @@ const Footer = () => {
 					</Stack>
 				</Stack>
 				<Stack className={'second'}>
-					<span>© Nestar - All rights reserved. Nestar {moment().year()}</span>
+					<span>© hankang - All rights reserved. hankang {moment().year()}</span>
 					<span>Privacy · Terms · Sitemap</span>
 				</Stack>
 			</Stack>

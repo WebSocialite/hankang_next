@@ -29,7 +29,7 @@ const Advertisement = () => {
 					loop
 					playsInline
 					preload="auto"
-					style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+					style={{ width: '100%', height: '760px', objectFit: 'cover', }}
 				>
 					<source src="/video/ads.mov" type="video/mp4" />
 				</video>

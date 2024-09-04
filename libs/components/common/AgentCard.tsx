@@ -7,15 +7,17 @@ import IconButton from '@mui/material/IconButton';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useReactiveVar } from '@apollo/client';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
+import { LIKE_TARGET_MEMBER } from '../../../apollo/user/mutation';
 
 interface AgentCardProps {
 	agent: any;
+	likeMemberHandler: any; 
 }
 
 const AgentCard = (props: AgentCardProps) => {
-	const { agent } = props;
+	const { agent, likeMemberHandler } = props;
 	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = agent?.memberImage
@@ -64,7 +66,7 @@ const AgentCard = (props: AgentCardProps) => {
 							<RemoveRedEyeIcon />
 						</IconButton>
 						<Typography className="view-cnt">{agent?.memberViews}</Typography>
-						<IconButton color={'default'}>
+						<IconButton color={'default'} onClick={() => likeMemberHandler(user, agent?._id)}>
 							{agent?.meLiked && agent?.meLiked[0]?.myFavorite ? (
 								<FavoriteIcon color={'primary'} />
 							) : (

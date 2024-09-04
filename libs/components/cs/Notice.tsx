@@ -1,53 +1,147 @@
 import React from 'react';
-import { Stack, Box } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
+import Link from 'next/link';
+import {
+	TableCell,
+	TableHead,
+	TableBody,
+	TableRow,
+	Table,
+	TableContainer,
+	Button,
+	Menu,
+	Fade,
+	MenuItem,
+} from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import { Stack } from '@mui/material';
+import { REACT_APP_API_URL } from '../../config';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Typography from '@mui/material/Typography';
+import { Notices } from '../../types/notice/notice';
+import { NoticeStatus } from '../../enums/notice.enum';
+import { GET_FAQS, GET_NOTICES } from '../../../apollo/user/query';
 
-const Notice = () => {
-	const device = useDeviceDetect();
+interface Data {
+	id: string;
+	Content: string;
+	memberNick: string;
+	agent: string;
+	location: string;
+	type: string;
+	status: string;
+}
 
-	/** APOLLO REQUESTS **/
-	/** LIFECYCLES **/
-	/** HANDLERS **/
+type Order = 'asc' | 'desc';
 
-	const data = [
-		{
-			no: 1,
-			event: true,
-			title: 'Register to use and get discounts',
-			date: '01.03.2024',
-		},
-		{
-			no: 2,
-			title: "It's absolutely free to upload and trade properties",
-			date: '31.03.2024',
-		},
-	];
+interface HeadCell {
+	disablePadding: boolean;
+	id: keyof Data;
+	label: string;
+	numeric: boolean;
+}
 
-	if (device === 'mobile') {
-		return <div>NOTICE MOBILE</div>;
-	} else {
-		return (
-			<Stack className={'notice-content'}>
-				<span className={'title'}>Notice</span>
-				<Stack className={'main'}>
-					<Box component={'div'} className={'top'}>
-						<span>number</span>
-						<span>title</span>
-						<span>date</span>
-					</Box>
-					<Stack className={'bottom'}>
-						{data.map((ele: any) => (
-							<div className={`notice-card ${ele?.event && 'event'}`} key={ele.title}>
-								{ele?.event ? <div>event</div> : <span className={'notice-number'}>{ele.no}</span>}
-								<span className={'notice-title'}>{ele.title}</span>
-								<span className={'notice-date'}>{ele.date}</span>
-							</div>
-						))}
-					</Stack>
-				</Stack>
-			</Stack>
-		);
-	}
+const headCells: readonly HeadCell[] = [
+	{
+		id: 'type',
+		numeric: false,
+		disablePadding: false,
+		label: 'TYPE',
+	},
+	{
+		id: 'Content',
+		numeric: true,
+		disablePadding: false,
+		label: 'CONTENT',
+	},
+	// {
+	// 	id: 'memberNick',
+	// 	numeric: false,
+	// 	disablePadding: false,
+	// 	label: 'MEMBER NICK',
+	// },
+	{
+		id: 'status',
+		numeric: false,
+		disablePadding: false,
+		label: 'STATUS',
+	},
+];
+
+interface EnhancedTableProps {
+	numSelected: number;
+	onRequestSort: (event: React.MouseEvent<unknown>, notice: keyof Data) => void;
+	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	order: Order;
+	orderBy: string;
+	rowCount: number;
+}
+
+function EnhancedTableHead(props: EnhancedTableProps) {
+	const { onSelectAllClick } = props;
+
+	return (
+		<TableHead>
+			<TableRow>
+				{headCells.map((headCell) => (
+					<TableCell key={headCell.id} align={'center'} padding={headCell.disablePadding ? 'none' : 'normal'}>
+						{headCell.label}
+					</TableCell>
+				))}
+			</TableRow>
+		</TableHead>
+	);
+}
+
+interface NoticePanelListType {
+	notices: Notices[];
+	anchorEl: any;
+	menuIconClickHandler: any;
+	menuIconCloseHandler: any;
+	updateNoticeHandler: any;
+	removeNoticeHandler: any;
+}
+
+export const NoticeArticlesPanelList = (props: NoticePanelListType) => {
+	const { notices, anchorEl, menuIconClickHandler, menuIconCloseHandler, updateNoticeHandler, removeNoticeHandler } =
+		props;
+
+	return (
+		<Stack>
+			<TableContainer>
+				<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
+					{/*@ts-ignore*/}
+					<EnhancedTableHead />
+					<TableBody>
+						{notices.length === 0 && (
+							<TableRow>
+								<TableCell align="center" colSpan={8}>
+									<span className={'no-data'}>data not found!</span>
+								</TableCell>
+							</TableRow>
+						)}
+
+						{notices.length !== 0 &&
+							notices.map((notice: any, index: number) => {
+								return (
+									<TableRow hover key={notice?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+										<TableCell align="center">{notice.noticeType}</TableCell>
+										<TableCell align="center">
+											<Link href={`/_admin/cs/notice_create?noticeId=${notice._id}`}>{notice.noticeContent}</Link>
+										</TableCell>
+										{/* <TableCell align="center">{notice.memberData?.memberNick}</TableCell> */}
+										<TableCell align="center">
+											<Button onClick={(e: any) => menuIconClickHandler(e, notice._id)} className={'badge success'}>
+												{notice.noticeStatus}
+											</Button>
+
+										</TableCell>
+									</TableRow>
+								);
+							})}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</Stack>
+	);
 };
 
-export default Notice;

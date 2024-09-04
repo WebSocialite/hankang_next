@@ -31,8 +31,8 @@ const withLayoutMain = (Component: any) => {
 			return (
 				<>
 					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
+						<title>hankang</title>
+						<meta name={'title'} content={`hankang`} />
 					</Head>
 					<Stack id="mobile-wrap">
 						<Stack id={'top'}>
@@ -53,8 +53,8 @@ const withLayoutMain = (Component: any) => {
 			return (
 				<>
 					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
+						<title>hankang</title>
+						<meta name={'title'} content={`hankang`} />
 					</Head>
 					<Stack id="pc-wrap">
 						<Stack id={'top'}>
@@ -62,17 +62,26 @@ const withLayoutMain = (Component: any) => {
 						</Stack>
 
 						<Stack className={'header-main'}>
-							<FiberContainer />
+							<video autoPlay loop muted playsInline preload="auto" className='back-video'>
+								<source src='/video/topBackground.mp4' type='video/mp4'></source>
+							</video>
+							<div className='content'>
+								<h1>hankang-estate</h1>
+							</div>
+							
 							<Stack className={'container'}>
 								<HeaderFilter />
+								{/* <FiberContainer /> */}
+
 							</Stack>
 						</Stack>
 
 						<Stack id={'main'}>
+							
 							<Component {...props} />
 						</Stack>
 
-						{user?._id && <Chat />}
+						<Chat />
 
 						<Stack id={'footer'}>
 							<Footer />
