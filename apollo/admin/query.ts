@@ -153,6 +153,8 @@ export const GET_ALL_BOARD_ARTICLES_BY_ADMIN = gql`
  *         COMMENT        *
  *************************/
 
+
+
 export const GET_COMMENTS = gql`
 	query GetComments($input: CommentsInquiry!) {
 		getComments(input: $input) {
@@ -188,6 +190,177 @@ export const GET_COMMENTS = gql`
 					updatedAt
 					accessToken
 				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE        *
+ *************************/
+
+export const GET_FAQS_BY_ADMIN = gql`
+	query GetFaqs($input: FaqInquiryDto!) {
+		getFaqs(input: $input) {
+			list {
+				_id
+				faqQuestion
+				faqAnswer
+				faqType
+				createdAt
+				updatedAt
+				faqStatus
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+export const GET_FAQ_BY_ADMIN = gql`
+	query GetFaq($input: String!) {
+		getFaq(input: $input) {
+			_id
+			faqQuestion
+			faqAnswer
+			faqType
+			faqStatus
+			memberData {
+				_id
+				memberType
+				memberStatus
+				memberAuthType
+				memberPhone
+				memberNick
+				memberFullName
+				memberImage
+				memberAddress
+				memberDesc
+				memberProperties
+				memberArticles
+				memberFollowings
+				memberPoints
+				memberLikes
+				memberViews
+				memberComments
+				memberRank
+				memberWarnings
+				memberBlocks
+				createdAt
+				updatedAt
+				deletedAt
+				accessToken
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE        *
+ *************************/
+export const GET_NOTICE_BY_ADMIN = gql`
+	query GetNotice($input: String!) {
+		getNotice(input: $input) {
+			_id
+			noticeType
+			noticeContent
+			noticeStatus
+			createdAt
+			updatedAt
+			memberData {
+				_id
+				memberType
+				memberStatus
+				memberAuthType
+				memberPhone
+				memberNick
+				memberFullName
+				memberImage
+				memberAddress
+				memberDesc
+				memberProperties
+				memberArticles
+				memberFollowings
+				memberPoints
+				memberLikes
+				memberViews
+				memberComments
+				memberRank
+				memberWarnings
+				memberBlocks
+				createdAt
+				updatedAt
+				deletedAt
+				accessToken
+			}
+		}
+	}
+`;
+export const GET_NOTICES_BY_ADMIN = gql`
+	query GetNotices($input: NoticeInquiryDto!) {
+		getNotices(input: $input) {
+			list {
+				_id
+				noticeType
+				noticeContent
+				noticeStatus
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberType
+					memberStatus
+					memberAuthType
+					memberPhone
+					memberNick
+					memberFullName
+					memberImage
+					memberAddress
+					memberDesc
+					memberProperties
+					memberArticles
+					memberFollowings
+					memberPoints
+					memberLikes
+					memberViews
+					memberComments
+					memberRank
+					memberWarnings
+					memberBlocks
+					createdAt
+					updatedAt
+					deletedAt
+					accessToken
+				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+export const GET_NOTIFICATION = gql`
+	query GetNotifications($input: GetNotificationsInquiry!) {
+		getNotifications(input: $input) {
+			list {
+				_id
+				notificationType
+				notificationStatus
+				notificationGroup
+				notificationTitle
+				notificationDesc
+				authorId
+				receiverId
+				propertyId
+				articleId
+				createdAt
+				updatedAt
 			}
 			metaCounter {
 				total

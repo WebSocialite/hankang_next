@@ -43,7 +43,7 @@ export const GET_AGENTS = gql`
 `;
 
 export const GET_MEMBER = gql(`
-query GetMember($input: String!) {
+  query GetMember($input: String!) {
     getMember(memberId: $input) {
         _id
         memberType
@@ -616,3 +616,254 @@ export const GET_MEMBER_FOLLOWINGS = gql`
 		}
 	}
 `;
+
+/**************************
+ *         FAQ        *
+ *************************/
+export const GET_FAQ = gql`
+	query GetFaq($input: String!) {
+		getFaq(input: $input) {
+			_id
+			faqQuestion
+			faqAnswer
+			faqType
+			faqStatus
+			memberData {
+				_id
+				memberType
+				memberStatus
+				memberAuthType
+				memberPhone
+				memberNick
+				memberFullName
+				memberImage
+				memberAddress
+				memberDesc
+				memberProperties
+				memberArticles
+				memberFollowings
+				memberPoints
+				memberLikes
+				memberViews
+				memberComments
+				memberRank
+				memberWarnings
+				memberBlocks
+				createdAt
+				updatedAt
+				deletedAt
+				accessToken
+				meLiked {
+					memberId
+					likeRefId
+					myFavorite
+				}
+				meFollowed {
+					followingId
+					followerId
+					myFollowing
+				}
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+export const GET_FAQS = gql`
+	query GetFaqs($input: FaqInquiryDto!) {
+		getFaqs(input: $input) {
+			list {
+				_id
+				faqQuestion
+				faqAnswer
+				faqType
+				createdAt
+				updatedAt
+				faqStatus
+				memberData {
+					_id
+					memberType
+					memberStatus
+					memberAuthType
+					memberPhone
+					memberNick
+					memberFullName
+					memberImage
+					memberAddress
+					memberDesc
+					memberProperties
+					memberArticles
+					memberFollowings
+					memberPoints
+					memberLikes
+					memberViews
+					memberComments
+					memberRank
+					memberWarnings
+					memberBlocks
+					createdAt
+					updatedAt
+					deletedAt
+					accessToken
+					meLiked {
+						memberId
+						likeRefId
+						myFavorite
+					}
+					meFollowed {
+						followingId
+						followerId
+						myFollowing
+					}
+				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *         NOTICE        *
+ *************************/
+export const GET_NOTICE = gql`
+	query GetNotice($input: String!) {
+		getNotice(input: $input) {
+			_id
+			noticeType
+			noticeContent
+			noticeStatus
+			createdAt
+			updatedAt
+			memberData {
+				_id
+				memberType
+				memberStatus
+				memberAuthType
+				memberPhone
+				memberNick
+				memberFullName
+				memberImage
+				memberAddress
+				memberDesc
+				memberProperties
+				memberArticles
+				memberFollowings
+				memberPoints
+				memberLikes
+				memberViews
+				memberComments
+				memberRank
+				memberWarnings
+				memberBlocks
+				createdAt
+				updatedAt
+				deletedAt
+				accessToken
+			}
+		}
+	}
+`;
+export const GET_NOTICES = gql`
+	query GetNotices($input: NoticeInquiryDto!) {
+		getNotices(input: $input) {
+			list {
+				_id
+				noticeType
+				noticeContent
+				noticeStatus
+				createdAt
+				updatedAt
+				memberData {
+					_id
+					memberType
+					memberStatus
+					memberAuthType
+					memberPhone
+					memberNick
+					memberFullName
+					memberImage
+					memberAddress
+					memberDesc
+					memberProperties
+					memberArticles
+					memberFollowings
+					memberPoints
+					memberLikes
+					memberViews
+					memberComments
+					memberRank
+					memberWarnings
+					memberBlocks
+					createdAt
+					updatedAt
+					deletedAt
+					accessToken
+				}
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+
+/**************************
+ *      NOTIFICATION      *
+ *************************/
+
+export const GET_NOTIFICATIONS = gql`
+	query GetNotifications($input: NotificationsInquiry!) {
+		getNotifications(input: $input) {
+			list {
+				_id
+				notificationType
+				notificationStatus
+				notificationGroup
+				notificationTitle
+				notificationDesc
+				authorId
+				receiverId
+				propertyId
+				articleId
+			}
+			metaCounter {
+				total
+			}
+		}
+	}
+`;
+/*****************************/
+/*         React Query       */
+/*****************************/
+/*
+ What is React Query? 
+ Datalarni backend dan qabul etish hamda
+ uni yaxshiroq performance amalga oshirish
+ uchun cache architecture ni qurish va
+ tinimsz backenda bn tinimsz synchronize qilish mantiqlarini joriy qilish.
+ Va undan tashqari turli hil pagination va scrolling qilinganda tinimsz
+ loading mantiqini amalga oshrishda bizga REACT QUERY hal qilib etuvchi tool.  
+
+ Va bu bizga bir qator hooklarni taqdim etadi
+ va biz react queryda mujassam bolgan hooklar orqali backend ga fetch qilishimiz mumkun
+ va olingan malumotlarni avtomatik tarzda client ni cache ga saqlashimiz mumkun.
+
+
+/*****************************/
+/*        TanStack Query     */
+/*****************************/
+/*
+Powerful asynchronous state management for TS/JS, React, Solid Vue and Svelte.
+
+   TansTack Query texnologiyasi turli tuman hooklarni taqdim etadi. Va bu hooklar bizga backend dan malumotlarni olib 
+bizning browserni cache da saqlash uchun yordamga keladi va tinimsz keyingi yangilangan malumotlarni 
+asynchronous shaklda qabul qilib bizning reactimizda tashkillashtirib beradigon qurilma hisoblanadi.
+
+Browser ni 4 hil storage bor: 
+1: Local storage  
+2: session storage
+3: cookielar
+4: cache
+*/
