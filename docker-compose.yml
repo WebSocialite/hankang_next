@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   hankang_next:
     container_name: hankang_next
