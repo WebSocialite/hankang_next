@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Box, Stack } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
-import Notice from '../../libs/components/cs/Notice';
+import { NoticeArticlesPanelList } from '../../libs/components/cs/Notice';
 import Faq from '../../libs/components/cs/Faq';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GET_NOTICES } from '../../apollo/user/query';
+import { T } from '../../libs/types/common';
+import { useQuery } from '@apollo/client';
+import { Notices } from '../../libs/types/notice/notice';
+import { NoticesInquiry } from '../../libs/types/notice/notice.input';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -14,9 +19,33 @@ export const getStaticProps = async ({ locale }: any) => ({
 	},
 });
 
-const CS: NextPage = () => {
+
+	const CS: NextPage = ({ initialInquiry, ...props }: any) => {
+		const [noticesInquiry, setNoticesInquiry] = useState<NoticesInquiry>(initialInquiry);
+		const [notices, setNotices] = useState<Notices[]>([]);
+		const [total, setTotal] = useState<number>(0);
+		const router = useRouter();
 	const device = useDeviceDetect();
-	const router = useRouter();
+
+
+
+	/** APOLLO REQUEST */
+
+	const {
+		loading: getNoticesLoading,
+		data: getNoticesData,
+		refetch: getNoticesRefetch,
+		error: getNoticesError,
+	} = useQuery(GET_NOTICES, {
+		fetchPolicy: 'network-only', // by default cache-first
+		variables: { input: { ...noticesInquiry } },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setNotices(data?.getNotices?.list || []);
+			setTotal(data?.getNotices?.metaCounter[0]?.total || 0);
+		},
+	});
+console.log(getNoticesData, "+++++++++++++");
 
 	/** HANDLERS **/
 	const changeTabHandler = (tab: string) => {
@@ -63,7 +92,7 @@ const CS: NextPage = () => {
 					</Box>
 
 					<Box component={'div'} className={'cs-content'}>
-						{tab === 'notice' && <Notice />}
+						{tab === 'notice' && <NoticeArticlesPanelList notices={notices} anchorEl={undefined} menuIconClickHandler={undefined} menuIconCloseHandler={undefined} updateNoticeHandler={undefined} removeNoticeHandler={undefined} />}
 
 						{tab === 'faq' && <Faq />}
 					</Box>
@@ -72,5 +101,13 @@ const CS: NextPage = () => {
 		);
 	}
 };
+
+CS.defaultProps = {
+	initialInquiry: {
+		page: 1,
+		limit: 10,
+	},
+};
+
 
 export default withLayoutBasic(CS);

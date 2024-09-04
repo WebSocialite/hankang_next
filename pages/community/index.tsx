@@ -11,6 +11,11 @@ import { T } from '../../libs/types/common';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { BoardArticlesInquiry } from '../../libs/types/board-article/board-article.input';
 import { BoardArticleCategory } from '../../libs/enums/board-article.enum';
+import { Messages } from '../../libs/config';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import { LIKE_TARGET_BOARD_ARTICLE } from '../../apollo/user/mutation';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_BOARD_ARTICLES } from '../../apollo/user/query';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -29,7 +34,23 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 	if (articleCategory) initialInput.search.articleCategory = articleCategory;
 
 	/** APOLLO REQUESTS **/
+	const [likeTargetBoardArticle] = useMutation(LIKE_TARGET_BOARD_ARTICLE)
 
+	const {
+		loading: boardArticlesLoading,
+		data: boardArticlesData,
+		error: boardArticlesError,
+		refetch : boardArticlesRefetch,
+	} = useQuery(GET_BOARD_ARTICLES, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: searchCommunity },
+		notifyOnNetworkStatusChange : true,
+		onCompleted: (data: T) => {
+			setBoardArticles(data?.getBoardArticles?.list);
+			setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);
+		},
+	});
+	
 	/** LIFECYCLES **/
 	useEffect(() => {
 		if (!query?.articleCategory)
@@ -62,6 +83,25 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		setSearchCommunity({ ...searchCommunity, page: value });
 	};
 
+	const likeArticleHandler = async (e: any, user: any, id: string ) => {
+		try {
+			e.stopPropagation();
+			if(!id) return;
+			if(!user._id) throw new Error(Messages.error2);
+		
+			await likeTargetBoardArticle({
+				variables: {input: id}
+			});
+		
+			await boardArticlesRefetch({ input: searchCommunity });
+
+			await sweetTopSmallSuccessAlert("success", 800);
+		} catch (err: any) {
+			console.log('ERROR likeArticleHandler', err.message );
+			sweetMixinErrorAlert(err.message).then();
+		}
+	};
+
 	if (device === 'mobile') {
 		return <h1>COMMUNITY PAGE MOBILE</h1>;
 	} else {
@@ -72,9 +112,9 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 						<Stack className="main-box">
 							<Stack className="left-config">
 								<Stack className={'image-info'}>
-									<img src={'/img/logo/logoText.svg'} />
+									{/* <img src={'/img/logo/logoText.svg'} /> */}
 									<Stack className={'community-name'}>
-										<Typography className={'name'}>Nestar Community</Typography>
+										<Typography className={'name'}>hankang Community</Typography>
 									</Stack>
 								</Stack>
 
@@ -136,7 +176,10 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 										<Stack className="list-box">
 											{totalCount ? (
 												boardArticles?.map((boardArticle: BoardArticle) => {
-													return <CommunityCard boardArticle={boardArticle} key={boardArticle?._id} />;
+													return <CommunityCard boardArticle={boardArticle} 
+													key={boardArticle?._id} 
+													likeArticleHandler={likeArticleHandler}
+													/>;
 												})
 											) : (
 												<Stack className={'no-data'}>
@@ -150,7 +193,11 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 										<Stack className="list-box">
 											{totalCount ? (
 												boardArticles?.map((boardArticle: BoardArticle) => {
-													return <CommunityCard boardArticle={boardArticle} key={boardArticle?._id} />;
+													return <CommunityCard 
+													boardArticle={boardArticle}
+													 key={boardArticle?._id} 
+													 likeArticleHandler={likeArticleHandler}
+													 />;
 												})
 											) : (
 												<Stack className={'no-data'}>
@@ -164,7 +211,11 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 										<Stack className="list-box">
 											{totalCount ? (
 												boardArticles?.map((boardArticle: BoardArticle) => {
-													return <CommunityCard boardArticle={boardArticle} key={boardArticle?._id} />;
+													return <CommunityCard 
+													boardArticle={boardArticle} 
+													key={boardArticle?._id} 
+													likeArticleHandler={likeArticleHandler}
+													/>;
 												})
 											) : (
 												<Stack className={'no-data'}>
@@ -178,7 +229,11 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 										<Stack className="list-box">
 											{totalCount ? (
 												boardArticles?.map((boardArticle: BoardArticle) => {
-													return <CommunityCard boardArticle={boardArticle} key={boardArticle?._id} />;
+													return <CommunityCard 
+													boardArticle={boardArticle}
+													key={boardArticle?._id} 
+													likeArticleHandler={likeArticleHandler}
+													/>;
 												})
 											) : (
 												<Stack className={'no-data'}>

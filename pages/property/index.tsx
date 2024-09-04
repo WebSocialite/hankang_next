@@ -10,7 +10,14 @@ import { PropertiesInquiry } from '../../libs/types/property/property.input';
 import { Property } from '../../libs/types/property/property';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import { Direction } from '../../libs/enums/common.enum';
+import { Direction, Message } from '../../libs/enums/common.enum';
+import { GET_PROPERTIES } from '../../apollo/user/query';
+import { useMutation, useQuery } from '@apollo/client';
+import { T } from '../../libs/types/common';
+import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+//import PropertyGallery from '../../libs/components/property/propertyGallery';
+//import { PropertyGallery } from '../../libs/components/property/PropertyGallery';
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -32,6 +39,22 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const [filterSortName, setFilterSortName] = useState('New');
 
 	/** APOLLO REQUESTS **/
+	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
+
+	const {
+		loading: getPropertiesLoading,
+		data: getPropertiesData,
+		error: getPropertiesError,
+		refetch : getPropertiesRefetch,
+	} = useQuery(GET_PROPERTIES, {
+		fetchPolicy: 'network-only',
+		variables: { input: searchFilter },
+		notifyOnNetworkStatusChange : true,
+		onCompleted: (data: T) => {
+			setProperties(data?.getProperties?.list);
+			setTotal(data?.getProperties?.metaCounter[0]?.total);
+		},
+	});
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -43,9 +66,13 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
 	}, [router]);
 
-	useEffect(() => {}, [searchFilter]);
+	useEffect(() => {
+		console.log("searchFilter", searchFilter);
+		// getPropertiesRefetch({input: searchFilter}).then();
+	}, [searchFilter]);
 
 	/** HANDLERS **/
+
 	const handlePaginationChange = async (event: ChangeEvent<unknown>, value: number) => {
 		searchFilter.page = value;
 		await router.push(
@@ -56,6 +83,24 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			},
 		);
 		setCurrentPage(value);
+	};
+
+	const likePropertyHandler = async (user: T, id: string ) => {
+		try {
+			if(!id) return;
+			if(!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+			// execute likeTargetHandler
+			await likeTargetProperty({
+				variables: {input: id}
+			});
+			// execute getPropertyRefetch
+			await getPropertiesRefetch({ input: initialInput });
+
+			await sweetTopSmallSuccessAlert("success", 800);
+		} catch (err: any) {
+			console.log('ERROR likePropertyHandler', err.message );
+			sweetMixinErrorAlert(err.message).then();
+		}
 	};
 
 	const sortingClickHandler = (e: MouseEvent<HTMLElement>) => {
@@ -92,6 +137,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		return (
 			<div id="property-list-page" style={{ position: 'relative' }}>
 				<div className="container">
+
 					<Box component={'div'} className={'right'}>
 						<span>Sort by</span>
 						<div>
@@ -126,13 +172,21 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 							</Menu>
 						</div>
 					</Box>
+				
+				
 					<Stack className={'property-page'}>
+					
+						
 						<Stack className={'filter-config'}>
+							
 							{/* @ts-ignore */}
 							<Filter searchFilter={searchFilter} setSearchFilter={setSearchFilter} initialInput={initialInput} />
 						</Stack>
+						
 						<Stack className="main-config" mb={'76px'}>
+							
 							<Stack className={'list-config'}>
+
 								{properties?.length === 0 ? (
 									<div className={'no-data'}>
 										<img src="/img/icons/icoAlert.svg" alt="" />
@@ -140,10 +194,12 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 									</div>
 								) : (
 									properties.map((property: Property) => {
-										return <PropertyCard property={property} key={property?._id} />;
+										return <PropertyCard property={property} likePropertyHandler={likePropertyHandler} key={property?._id} />;
 									})
 								)}
+
 							</Stack>
+
 							<Stack className="pagination-config">
 								{properties.length !== 0 && (
 									<Stack className="pagination-box">
@@ -163,8 +219,11 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 											Total {total} propert{total > 1 ? 'ies' : 'y'} available
 										</Typography>
 									</Stack>
-								)}
+						)}
+
 							</Stack>
+							{/* <PropertyGallery/> */}
+
 						</Stack>
 					</Stack>
 				</div>
